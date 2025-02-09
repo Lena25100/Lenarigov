@@ -1,0 +1,116 @@
+using System;
+using System.Linq;
+
+class PhoneBook
+{
+    public string name;
+    public string oper;
+    public string year;
+    public string town;
+
+    public PhoneBook(string name, string oper, string year, string town)
+    {
+        this.name = name;
+        this.oper = oper;
+        this.town = town;
+        this.year = year;
+    }
+}
+
+class Contact : PhoneBook
+{
+    public string[] numbers;
+
+    public Contact(string name, string oper, string[] numbers, string year, string town) : base(name, oper, year, town)
+    {
+        this.numbers = numbers;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.Write("Введите число контактов: ");
+        int n = Convert.ToInt32(Console.ReadLine());
+        Contact[] contacts = new Contact[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            Console.WriteLine($"Введите данные о контакте {i + 1} через пробел (ФИО(или Ф_И_О) оператор год_подключения город номер1 номер2...n):");
+            string[] dannue = Console.ReadLine().Split(' ');
+
+            if (dannue.Length < 5)
+            {
+                Console.WriteLine("Недостаточно данных для создания контакта.");
+                i--;
+                continue;
+            }
+
+            string[] numbers = dannue[4..]; // Берем элементы начиная с 4-го(это будут номера контакта)
+            contacts[i] = new Contact(dannue[0], dannue[1], numbers, dannue[2], dannue[3]);
+        }
+
+        int action;
+        do
+        {
+            Console.WriteLine("Выберите действие:\n1 – Заполнение | 2 – Вывод данных контактов | 3 – Выборка по оператору | 4 – Выборка по имени | 5 – Выборка по номеру тф | 6 – Выход ");
+            action = Convert.ToInt32(Console.ReadLine());
+
+            switch (action)
+            {
+                case 1:
+                    Console.WriteLine("Данные уже получены");
+                    break;
+
+                case 2:
+                    Console.WriteLine("---Контакты---");
+                    foreach (var contact in contacts)
+                    {
+                        Console.Write($"{contact.name} {contact.oper} {contact.year} {contact.town} ");
+                        Console.WriteLine(string.Join(", ", contact.numbers));
+                    }
+                    break;
+
+                case 3:
+                    Console.Write("Введите оператора: ");
+                    string oper = Console.ReadLine();
+                    for (int i = 0; i < n; i++)
+                    {
+                        if (contacts[i].oper.Equals(oper, StringComparison.OrdinalIgnoreCase)) //сравниваем операторы контактов без учёта регистра
+                        {
+                            Console.Write($"{contacts[i].name} {contacts[i].oper} {contacts[i].year} {contacts[i].town} ");
+                            Console.WriteLine(string.Join(", ", contacts[i].numbers));
+                        }
+                    }
+                    break;
+
+                case 4:
+                    Console.Write("Введите имя контакта: ");
+                    string name = Console.ReadLine();
+                    foreach (var contact in contacts)
+                    {
+                        if (contact.name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.Write($"{contact.name} {contact.oper} {contact.year} {contact.town} ");
+                            Console.WriteLine(string.Join(", ", contact.numbers));
+                        }
+                    }
+                    break;
+
+                case 5:
+                    Console.Write("Введите номер телефона: ");
+                    string phoneNumber = Console.ReadLine();
+                    foreach (var contact in contacts)
+                    {
+                        if (contact.numbers.Contains(phoneNumber))
+                        {
+                            Console.Write($"{contact.name} {contact.oper} {contact.year} {contact.town} ");
+                            Console.WriteLine(string.Join(", ", contact.numbers));
+                        }
+                    }
+                    break;
+            }
+        } while (action != 6);
+    }
+}
