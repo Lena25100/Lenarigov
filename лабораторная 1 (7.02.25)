@@ -4,26 +4,28 @@ using System.Linq;
 class PhoneBook
 {
     public string name;
-    public string oper;
-    public string year;
     public string town;
+    public PhoneNumber[] numbers;
 
-    public PhoneBook(string name, string oper, string year, string town)
+    public PhoneBook(string name, string town, PhoneNumber[] numbers)
     {
         this.name = name;
-        this.oper = oper;
         this.town = town;
-        this.year = year;
+        this.numbers = numbers;
     }
 }
 
-class Contact : PhoneBook
+class PhoneNumber
 {
-    public string[] numbers;
+    public string number;
+    public string oper;
+    public string year;
 
-    public Contact(string name, string oper, string[] numbers, string year, string town) : base(name, oper, year, town)
+    public PhoneNumber(string number, string oper, string year)
     {
-        this.numbers = numbers;
+        this.number = number;
+        this.oper = oper;
+        this.year = year;
     }
 }
 
@@ -33,22 +35,30 @@ class Program
     {
         Console.Write("Введите число контактов: ");
         int n = Convert.ToInt32(Console.ReadLine());
-        Contact[] contacts = new Contact[n];
+        PhoneBook[] contacts = new PhoneBook[n];
 
         for (int i = 0; i < n; i++)
         {
-            Console.WriteLine($"Введите данные о контакте {i + 1} через пробел (ФИО(или Ф_И_О) оператор год_подключения город номер1 номер2...n):");
+            Console.WriteLine($"Введите данные о контакте {i + 1} через пробел (ФИО(или Ф_И_О) город номер1 оператор1 год1 номер2 оператор2 год2 ...):");
             string[] dannue = Console.ReadLine().Split(' ');
 
-            if (dannue.Length < 5)
+            if (dannue.Length < 4)
             {
                 Console.WriteLine("Недостаточно данных для создания контакта.");
                 i--;
                 continue;
             }
 
-            string[] numbers = dannue[4..]; // Берем элементы начиная с 4-го(это будут номера контакта)
-            contacts[i] = new Contact(dannue[0], dannue[1], numbers, dannue[2], dannue[3]);
+            string name = dannue[0];
+            string town = dannue[1];
+
+            PhoneNumber[] numbers = new PhoneNumber[(dannue.Length - 2) / 3];
+            for (int j = 0, z = 2; j < numbers.Length; j++, z += 3)
+            {
+                numbers[j] = new PhoneNumber(dannue[z], dannue[z + 1], dannue[z + 2]);
+            }
+
+            contacts[i] = new PhoneBook(name, town, numbers);
         }
 
         int action;
@@ -67,20 +77,26 @@ class Program
                     Console.WriteLine("---Контакты---");
                     foreach (var contact in contacts)
                     {
-                        Console.Write($"{contact.name} {contact.oper} {contact.year} {contact.town} ");
-                        Console.WriteLine(string.Join(", ", contact.numbers));
+                        Console.Write($"{contact.name} {contact.town} ");
+                        foreach (var num in contact.numbers)
+                        {
+                            Console.Write($"{num.number} ({num.oper}, {num.year})  ");
+                        }
+                        Console.WriteLine();
                     }
                     break;
 
                 case 3:
                     Console.Write("Введите оператора: ");
                     string oper = Console.ReadLine();
-                    for (int i = 0; i < n; i++)
+                    foreach (var contact in contacts)
                     {
-                        if (contacts[i].oper.Equals(oper, StringComparison.OrdinalIgnoreCase)) //сравниваем операторы контактов без учёта регистра
+                        foreach (var num in contact.numbers)
                         {
-                            Console.Write($"{contacts[i].name} {contacts[i].oper} {contacts[i].year} {contacts[i].town} ");
-                            Console.WriteLine(string.Join(", ", contacts[i].numbers));
+                            if (num.oper.Equals(oper, StringComparison.OrdinalIgnoreCase))
+                            {
+                                Console.WriteLine($"{contact.name} {contact.town} {num.number} ({num.oper}, {num.year})");
+                            }
                         }
                     }
                     break;
@@ -92,8 +108,12 @@ class Program
                     {
                         if (contact.name.Equals(name, StringComparison.OrdinalIgnoreCase))
                         {
-                            Console.Write($"{contact.name} {contact.oper} {contact.year} {contact.town} ");
-                            Console.WriteLine(string.Join(", ", contact.numbers));
+                            Console.Write($"{contact.name} {contact.town} ");
+                            foreach (var num in contact.numbers)
+                            {
+                                Console.Write($"{num.number} ({num.oper}, {num.year})  ");
+                            }
+                            Console.WriteLine();
                         }
                     }
                     break;
@@ -103,10 +123,12 @@ class Program
                     string phoneNumber = Console.ReadLine();
                     foreach (var contact in contacts)
                     {
-                        if (contact.numbers.Contains(phoneNumber))
+                        foreach (var num in contact.numbers)
                         {
-                            Console.Write($"{contact.name} {contact.oper} {contact.year} {contact.town} ");
-                            Console.WriteLine(string.Join(", ", contact.numbers));
+                            if (num.number == phoneNumber)
+                            {
+                                Console.WriteLine($"{contact.name} {contact.town} {num.number} ({num.oper}, {num.year})");
+                            }
                         }
                     }
                     break;
