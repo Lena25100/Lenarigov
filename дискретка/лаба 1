@@ -1,0 +1,72 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int[,] graphMatrix = new int[10, 10]// матрицa смежности для графа с 10 звеньями
+        {
+            { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1
+            { 1, 0, 0, 0, 1, 0, 1, 0, 1, 0 }, // 2
+            { 0, 0, 0, 0, 0, 0, 0, 1, 0, 1 }, // 3
+            { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 }, // 4
+            { 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 }, // 5
+            { 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 }, // 6
+            { 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 }, // 7
+            { 0, 0, 1, 0, 0, 0, 0, 0, 0, 1 }, // 8
+            { 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 }, // 9
+            { 0, 0, 1, 0, 0, 0, 0, 1, 0, 0 }, // 10
+        };
+
+        int[] componentConnectivity = new int[10]; // компоненты связности для звеньев
+        componentConnectivity[0] = 1; // первый компонент 
+
+        for (int i = 1; i < graphMatrix.GetLength(0); i++)
+        {
+            int minComponent = int.MaxValue;
+            for (int j = 0; j < i; j++)
+            {
+                if (graphMatrix[i, j] == 1)  
+                {
+                    minComponent = Math.Min(minComponent, componentConnectivity[j]);
+                }
+            }
+
+            if (minComponent == int.MaxValue) // нет связи с предыдущими
+            {
+                componentConnectivity[i] = componentConnectivity[i - 1] + 1; // новый компонент
+            }
+            else
+            {
+                componentConnectivity[i] = minComponent; 
+            }
+
+            for (int j = 0; j < i; j++)
+            {
+
+                if (graphMatrix[i, j] == 1 && componentConnectivity[j] > componentConnectivity[i])
+                {
+                    componentConnectivity[j] = componentConnectivity[i]; // обновление компонентов св-ти для предыдущих звеньев
+                }
+            }
+        }
+
+
+        Console.WriteLine("Компоненты связности звеньев:");
+        for (int i = 0; i < componentConnectivity.Length; i++)
+        {
+            Console.WriteLine($"Звено {i + 1}: Компонент связи = {componentConnectivity[i]} ");
+        }
+
+        int maxComponent = 0;
+        for (int i = 0; i < componentConnectivity.Length; i++)
+        {
+            if (componentConnectivity[i] > maxComponent)
+            {
+                maxComponent = componentConnectivity[i];
+            }
+        }
+        Console.WriteLine($"Максимальный компонент связности: {maxComponent}");
+
+    }
+}
