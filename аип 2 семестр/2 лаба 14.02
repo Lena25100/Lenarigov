@@ -1,0 +1,127 @@
+using System;
+
+namespace lab_14_02
+{
+    public interface IGeomCounter
+    {
+        double Area(); 
+        double Perimeter(); 
+    }
+    public class Figure
+    {
+        public string Name { get; set; }
+        public Figure(string name)
+        {
+            Name = name;
+        }
+    }
+    public class Circle : Figure, IGeomCounter
+    {
+        public double circRadius;
+
+        public Circle(string name, double radius) : base(name)
+        {
+            this.circRadius = radius;
+        }
+
+        public double Perimeter()
+        {
+            return 2 * Math.PI * circRadius;
+        }
+
+        public double Area()
+        {
+            return Math.PI * circRadius * circRadius;
+        }
+    }
+
+    public class Square : Figure, IGeomCounter
+    {
+        public double sqSide;
+
+        public Square(string name, double side) : base(name)
+        {
+            this.sqSide = side;
+        }
+
+        public double Perimeter()
+        {
+            return 4 * sqSide;
+        }
+
+        public double Area()
+        {
+            return sqSide * sqSide;
+        }
+    }
+
+    public class Triangle : Figure, IGeomCounter
+    {
+        public double trSide;
+
+        public Triangle(string name, double side) : base(name)
+        {
+            this.trSide = side;
+        }
+
+        public double Perimeter()
+        {
+            return 3 * trSide;
+        }
+
+        public double Area()
+        {
+            return (Math.Sqrt(3) / 4) * trSide * trSide;
+        }
+    }
+
+   
+    class Program
+    {
+        static void Main()
+        {
+
+
+            for (int i = 0; i < 3; i++)
+            {
+                Console.WriteLine("Введите по одному разу все фигуры по номеру(1 - окружность, 2 - квадрат, 3 - равност. треугольник: ");
+                string shape = Console.ReadLine();
+
+                if (shape == "1")
+                {
+                    Figure circName = new Figure(shape);
+                    Console.WriteLine("Введите радиус: ");
+                    int radiusCircle = Convert.ToInt32(Console.ReadLine());
+                    Circle crcle = new(shape, radiusCircle);
+                    Console.WriteLine("Площадь окружности равна: "+crcle.Area());
+;                   Console.WriteLine("Периметр окружности равен: "+ crcle.Perimeter());
+
+                }
+                else if (shape == "2")
+
+                {
+                    Figure squareName = new Figure(shape);
+                    Console.WriteLine("Введите длину стороны: ");
+                    int side = Convert.ToInt32(Console.ReadLine());
+                    Square square = new(shape, side);
+                    Console.WriteLine("Площадь квадрата равна: "+ square.Area());
+                    Console.WriteLine("Периметр квадрата равен: "+ square.Perimeter());
+
+                }
+                else if (shape == "3")
+                {
+                    Figure trName = new Figure(shape);
+                    Console.WriteLine("Введите длину стороны: ");
+                    int trSide = Convert.ToInt32(Console.ReadLine());
+                    Triangle triangle = new(shape, trSide);
+                    Console.WriteLine("Площадь треугольника равна: "+ triangle.Area());
+                    Console.WriteLine("Периметр треугольника равен: "+ triangle.Perimeter());
+                }
+                else
+                {
+                    Console.WriteLine("укажите номер из предложенных!");
+                }
+            }
+        }
+    }
+}
