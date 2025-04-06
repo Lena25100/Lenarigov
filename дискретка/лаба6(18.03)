@@ -1,0 +1,59 @@
+using System;
+
+class FloydAlg
+{
+    static void Main()
+    {
+        int[,] graph = {
+            { 0,   3,  int.MaxValue, 5 },
+            { 2,   0,  int.MaxValue, 4 },
+            { int.MaxValue, 1, 0, int.MaxValue },
+            { int.MaxValue, int.MaxValue, 2, 0 }
+        };
+
+        int n = graph.GetLength(0);
+        int[,] distance = new int[n, n];
+
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (i == j)
+                    distance[i, j] = 0;
+                else
+                    distance[i, j] = graph[i, j];
+            }
+        }
+
+        //сам алгоритм
+        for (int k = 0; k < n; k++)      
+        {
+            for (int i = 0; i < n; i++)   
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (distance[i, k] != int.MaxValue && distance[k, j] != int.MaxValue)
+                    {
+                        int newDistance = distance[i, k] + distance[k, j];
+                        if (newDistance < distance[i, j])
+                            distance[i, j] = newDistance;
+                    }
+                }
+            }
+        }
+
+        Console.WriteLine("Матрица кратчайших расстояний:");
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (distance[i, j] == int.MaxValue)
+                    Console.Write("INF".PadLeft(4));
+                else
+                    Console.Write(distance[i, j].ToString().PadLeft(4));
+            }
+            Console.WriteLine();
+        }
+    }
+}
