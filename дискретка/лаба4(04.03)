@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+
+class DijkstraAlgorithm
+{
+    public static void DijkstraAlg(int[,] graph, int start, int end)
+    {
+        int n = graph.GetLength(0);
+        int[] dist = new int[n];
+        bool[] visited = new bool[n];
+        int[] prev = new int[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            dist[i] = int.MaxValue;
+            prev[i] = -1;
+        }
+
+        dist[start] = 0;
+
+        for (int count = 0; count < n - 1; count++)
+        {
+            int u = MinDistance(dist, visited);
+            if (u == -1) break;
+
+            visited[u] = true;
+
+            for (int v = 0; v < n; v++)
+            {
+                if (!visited[v] && graph[u, v] != 0 &&
+                    dist[u] != int.MaxValue &&
+                    dist[u] + graph[u, v] < dist[v])
+                {
+                    dist[v] = dist[u] + graph[u, v];
+                    prev[v] = u;
+                }
+            }
+        }
+
+        PathPrint(dist, prev, start, end);
+    }
+
+    static int MinDistance(int[] dist, bool[] visited)
+    {
+        int min = int.MaxValue, minIndex = -1;
+
+        for (int v = 0; v < dist.Length; v++)
+        {
+            if (!visited[v] && dist[v] < min)
+            {
+                min = dist[v];
+                minIndex = v;
+            }
+        }
+
+        return minIndex;
+    }
+
+    static void PathPrint(int[] dist, int[] prev, int start, int end)
+    {
+        if (dist[end] == int.MaxValue)
+        {
+            Console.WriteLine("Пути не существует.");
+            return;
+        }
+
+        Console.WriteLine($"Минимальное расстояние от вершины {start} до вершины {end}: {dist[end]}");
+
+        Stack<int> path = new Stack<int>();
+        for (int at = end; at != -1; at = prev[at])
+            path.Push(at);
+
+        Console.Write("Путь: ");
+        while (path.Count > 0)
+        {
+            Console.Write(path.Pop());
+            if (path.Count > 0)
+                Console.Write(" → ");
+        }
+
+        Console.WriteLine();
+    }
+
+    static void Main()
+    {
+        int[,] graph = new int[,]
+        {
+            // 0  1  2  3  4
+            {  0, 4, 0, 0, 0 }, // 0
+            {  0, 0, 2, 0, 0 }, // 1
+            {  0, 0, 0, 3, 0 }, // 2
+            {  0, 0, 0, 0, 1 }, // 3
+            {  0, 0, 0, 0, 0 }, // 4
+        };
+
+        Console.Write("Введите начальную вершину: ");
+        int start = int.Parse(Console.ReadLine());
+
+        Console.Write("Введите конечную вершину: ");
+        int end = int.Parse(Console.ReadLine());
+
+        DijkstraAlg(graph, start, end);
+    }
+}
