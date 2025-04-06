@@ -1,0 +1,95 @@
+using System;
+using System.Collections.Generic;
+
+class Graph
+{
+    int V; 
+    List<int>[] adj; 
+
+    public Graph(int[,] matrix)
+    {
+        V = matrix.GetLength(0);
+        adj = new List<int>[V];
+
+        for (int i = 0; i < V; i++)
+            adj[i] = new List<int>();
+
+        for (int i = 0; i < V; i++)
+        {
+            for (int j = i; j < V; j++)
+            {
+                if (matrix[i, j] != 0)
+                {
+                    adj[i].Add(j);
+                    adj[j].Add(i);
+                }
+            }
+        }
+    }
+
+    public void FindBridge()
+    {
+        int[] disc = new int[V];
+        int[] low = new int[V];
+        bool[] visited = new bool[V];
+        int[] parent = new int[V];
+
+        for (int i = 0; i < V; i++)
+        {
+            disc[i] = -1;
+            low[i] = -1;
+            parent[i] = -1;
+        }
+
+        int time = 0;
+
+        for (int i = 0; i < V; i++)
+        {
+            if (!visited[i])
+                DFS(i, visited, disc, low, parent, ref time);
+        }
+    }
+
+    private void DFS(int u, bool[] visited, int[] disc, int[] low, int[] parent, ref int time)
+    {
+        visited[u] = true;
+        disc[u] = low[u] = ++time;
+
+        foreach (int v in adj[u])
+        {
+            if (!visited[v])
+            {
+                parent[v] = u;
+                DFS(v, visited, disc, low, parent, ref time);
+
+                low[u] = Math.Min(low[u], low[v]);
+
+                if (low[v] > disc[u])
+                    Console.WriteLine($"Мост: ({u}, {v})");
+            }
+            else if (v != parent[u])
+            {
+                low[u] = Math.Min(low[u], disc[v]);
+            }
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        int[,] matrix = new int[,]
+        {
+            { 0, 1, 0, 0, 0 },
+            { 1, 0, 1, 1, 0 },
+            { 0, 1, 0, 0, 0 },
+            { 0, 1, 0, 0, 1 },
+            { 0, 0, 0, 1, 0 }
+        };
+
+        Graph g = new Graph(matrix);
+        Console.WriteLine("Мосты в данном графе:");
+        g.FindBridge();
+    }
+}
