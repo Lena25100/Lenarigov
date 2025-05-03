@@ -1,0 +1,54 @@
+using System;
+using System.Collections.Generic;
+namespace лаба_07_03
+{
+    class Number
+    {
+        public long PhoneNumber { get; set; }
+        public string Operator { get; set; }
+
+        public Number(int num, string oper)
+        {
+            PhoneNumber = num;
+            Operator = oper;
+        }
+    }
+    class Program
+    {
+        static void Main()
+        {
+            var dict = new Dictionary<string, int>();
+            HashSet<string> unic = new HashSet<string>();
+            Console.WriteLine("Введите количество номеров телефона: ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            string[] opers = new string[n];
+            Number[] numbers = new Number[n];
+            for (var i = 0; i < n; i++)
+            {
+                Console.WriteLine("Введите номер телефона: ");
+                int num = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Введите оператора связи: ");
+                string oper = Console.ReadLine();
+                numbers[i] = new Number(num, oper);
+                unic.Add(oper);
+                opers[i] = oper;
+            }
+            foreach (var i in unic)
+            {
+                Console.WriteLine(i + " ");
+                dict[i] = 0;
+            }
+            foreach (var op in opers)
+            {
+                if (dict.ContainsKey(op))
+                    dict[op]++;
+                else
+                    dict[op] = 1;
+            }
+            foreach (var x in dict)
+            {
+                Console.WriteLine($"Оператор связи: {x.Key},  количество повторений: {x.Value}");
+            }
+        }
+    }
+}
