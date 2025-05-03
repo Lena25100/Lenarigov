@@ -1,0 +1,76 @@
+using System;
+using System.Collections.Generic;
+namespace lab_28_02
+
+{
+    class Program
+    {
+        static void Main()
+        {
+            //задание 1
+            Console.WriteLine("Введите выражение в виде постфиксной польской записи (2 + 2 => 2 2 + ");
+            string lines = Console.ReadLine();
+            string[] line = lines.Split(' ');
+            var stack = new Stack<int>();
+
+            foreach (var x in line)
+            {
+                Console.WriteLine(x);
+                if (int.TryParse(x, out int result)) stack.Push(result);
+                else
+                {
+                    if (stack.Count < 2)
+                    {
+                        Console.WriteLine("Выражение введено неправильно!");
+                        return;
+                    }
+                    int first = stack.Pop();
+                    int second = stack.Pop();
+
+                    switch (x)
+                    {
+                        case "+":
+                            stack.Push(first + second);
+                            break;
+                        case "-":
+                            stack.Push(second - first);
+                            break;
+                        case "*":
+                            stack.Push(first * second);
+                            break;
+                        case "/":
+                            stack.Push(second / first);
+                            break;
+                    }
+                }
+
+            }
+            if (stack.Count == 1) Console.WriteLine($"Получившееся значение: {stack.Peek()}");
+            else Console.WriteLine("Ошибка ввода!");
+
+            //задание 2
+            int[] arr = new int[8] { 1, 3, 7, 2, 9, 1, 7, 1 };
+            HashSet<int> hash = new HashSet<int>(arr);
+            var dict = new Dictionary<int, int>();
+            foreach (var i in hash)
+            {
+                Console.WriteLine(i + " ");
+                dict[i] = 0;
+            }
+
+            foreach (var num in arr)
+            {
+                if (dict.ContainsKey(num))
+                    dict[num]++;
+                else
+                    dict[num] = 1;
+            }
+
+            foreach (var x in dict)
+            {
+                Console.WriteLine($"key: {x.Key}  value: {x.Value}");
+            }
+
+        }
+    }
+}
