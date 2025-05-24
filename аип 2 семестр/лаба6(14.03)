@@ -1,0 +1,70 @@
+using System;
+using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
+public delegate void Operation();
+{
+    class Numbers
+    {
+        public int FirstNumber { get; set; }
+        public int SecondNumber { get; set; }
+        public Numbers(int num_1, int num_2)
+        {
+            FirstNumber = num_1;
+            SecondNumber = num_2;
+        }
+
+        public void Sum()
+        {
+            FirstNumber = FirstNumber + SecondNumber;
+            
+        }
+        public void Mult()
+        {
+            FirstNumber = FirstNumber * SecondNumber;
+        }
+        public void Diff()
+        {
+            FirstNumber = FirstNumber - SecondNumber;
+        }
+        public void Div()
+        {
+            if (SecondNumber != 0) FirstNumber = FirstNumber / SecondNumber;
+            else Console.WriteLine("Деление на 0 невозможно!");
+        }
+        public void PrintResult()
+        {
+            Console.WriteLine("Результат операций: " + FirstNumber);
+        }
+
+    }
+    class Program
+    {
+        static void Main()
+        { 
+            Console.WriteLine("Введите первое число: ");
+            int x = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите второе число: ");
+            int y = Convert.ToInt32(Console.ReadLine());
+            Numbers pare_1 = new Numbers(x, y);
+
+            Operation first = pare_1.Sum;
+            first += pare_1.Mult;
+            first += pare_1.Diff;
+            first += pare_1.PrintResult;
+            first();
+
+            Console.WriteLine("Введите третье число: ");
+            int a = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите четвертое число: ");
+            int b = Convert.ToInt32(Console.ReadLine());
+            Numbers pare_2 = new Numbers(a, b);
+
+            Operation second = pare_2.Diff;
+            second += pare_2.Div;
+            second += pare_2.Mult;
+            second += pare_2.PrintResult;
+            second();
+
+        }
+    }
+}
