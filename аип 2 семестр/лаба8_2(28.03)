@@ -1,0 +1,90 @@
+using System;
+using System.Diagnostics.Contracts;
+using System.Security.Cryptography;
+
+public delegate void Race();
+
+{
+    class MyEvent
+    {
+        public event Race CrossFinish;
+        public bool EventTriggered { get; private set; } = false;
+
+        public void Crossed()
+        {
+            if (CrossFinish != null)
+            {
+                CrossFinish();
+            }
+        }
+
+        public void Triggered()
+        {
+            EventTriggered = true;
+        }
+    }
+
+    class Racer
+    {
+        public string name { get; set; }
+        public int distance { get; set; }
+        public int speed { get; set; }
+
+        public Racer(string name, int distance, int speed)
+        {
+            this.name = name;
+            this.distance = distance;
+            this.speed = speed;
+        }
+    }
+
+    class PossibleEnents
+    {
+        static void Finish(int t, int finish, Racer racer1, Racer racer2, Racer racer3, MyEvent myEvent)
+        {
+            if (racer1.distance >= finish) 
+            {
+                Console.WriteLine($"Гонщик {racer1.name} пришел к финишу первым!");
+                myEvent.Triggered();
+            }
+            else if (racer2.distance >= finish)
+            {
+                Console.WriteLine($"Гонщик {racer2.name} пришел к финишу первым!");
+                myEvent.Triggered();
+            }
+            else if (racer3.distance >= finish)
+            {
+                Console.WriteLine($"Гонщик {racer3.name} пришел к финишу первым!");
+                myEvent.Triggered();
+            }
+        }
+
+        static void Main()
+        {
+            Racer racer_1 = new Racer("B612", 0, 7);
+            Racer racer_2 = new Racer("C416", 0, 8);
+            Racer racer_3 = new Racer("N554", 0, 9);
+            Random rndm = new Random();
+            MyEvent evt = new MyEvent();
+            int FinishRace = 200;
+            int t = 2;
+            evt.CrossFinish += () => Finish(t, FinishRace, racer_1, racer_2, racer_3, evt);
+
+            while (!evt.EventTriggered)
+            {
+                racer_1.distance += t * racer_1.speed;
+                racer_1.speed = rndm.Next(0, 60);
+                racer_2.distance += t * racer_2.speed;
+                racer_2.speed = rndm.Next(0, 60);
+                racer_3.distance += t * racer_3.speed;
+                racer_3.speed = rndm.Next(0, 60);
+
+                Console.WriteLine($"Гонщик {racer_1.name} прошел: {racer_1.distance}");
+                Console.WriteLine($"Гонщик {racer_2.name} прошел: {racer_2.distance}");
+                Console.WriteLine($"Гонщик {racer_3.name} прошел: {racer_3.distance}");
+                evt.Crossed();
+            }
+                   
+        }
+    }
+}
