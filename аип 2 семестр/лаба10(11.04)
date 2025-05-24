@@ -1,0 +1,96 @@
+using System;
+{
+    class WorkWithArray<T>
+    {
+        public T[] Array;
+        public int Length;
+
+        public WorkWithArray(T[] array, int length)
+        {
+            Array = array;
+            Length = length;
+        }
+
+        public void DeleteEl(int del_id)
+        {
+            if (del_id >= 0 && del_id < Length)
+            {
+                T[] newArray = new T[Length - 1];
+                for (int i = 0, j = 0; i < Length; i++)
+                {
+                    if (i != del_id)
+                        newArray[j++] = Array[i];
+                }
+
+                Array = newArray;
+                Length--;
+                Console.WriteLine("Массив после удаления:");
+                foreach (var x in Array) Console.Write(x + " ");    
+                Console.WriteLine();
+            }
+            else Console.WriteLine("Вы вышли за пределы массива!");   
+        }
+
+        public void PtintEl(int print_id)
+        {
+            if (print_id >= 0 && print_id < Length)
+            {
+                Console.WriteLine($"Элемент с индексом {print_id}: {Array[print_id]}");
+            }
+            else Console.WriteLine("Вы вышли за пределы массива!");
+        }
+
+        public void AddToArray(T el)
+        {
+            T[] newArray = new T[Length + 1];
+            for (int i = 0; i < Length; i++) newArray[i] = Array[i];   
+            newArray[Length] = el;
+
+            Array = newArray;
+            Length++;
+
+            Console.WriteLine("Массив после добавления:");
+            foreach (var x in Array) Console.Write(x + " ");     
+            Console.WriteLine();
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            int[] int_array = new int[] { 1, 2, 3, 5, 6 };
+
+            Console.WriteLine("Индекс эл-та, который вы хотите удалить: ");
+            int d_1 = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Индекс эл-та, который вы хотите вывести: ");
+            int p_1 = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Эл-т, который вы хотите добавить (int): ");
+            int a_1 = Convert.ToInt32(Console.ReadLine());
+
+            WorkWithArray<int> int_example = new WorkWithArray<int>(int_array, int_array.Length);
+            int_example.DeleteEl(d_1);
+            int_example.PtintEl(p_1);
+            int_example.AddToArray(a_1);
+
+
+            string[] str_array = new string[] { "s", "t", "r", "a", "y", "k", "i", "d", "s" };
+
+            Console.WriteLine("Индекс эл-та, который вы хотите удалить: ");
+            int d_2 = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Индекс эл-та, который вы хотите вывести: ");
+            int p_2 = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Эл-т, который вы хотите добавить (string): ");
+            string a_2 = Console.ReadLine();
+
+            WorkWithArray<string> str_example = new WorkWithArray<string>(str_array, str_array.Length);
+            str_example.DeleteEl(d_2);
+            str_example.PtintEl(p_2);
+            str_example.AddToArray(a_2);
+        }
+    }
+}
