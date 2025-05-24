@@ -1,0 +1,67 @@
+using System;
+
+public delegate void Controller();
+
+{
+    class MyEvent
+    {
+        public event Controller CrossBorder;
+        public bool EventTriggered { get; private set; } = false;
+
+        public void Crossed()
+        {
+            if (CrossBorder != null)
+            {
+                CrossBorder();
+            }
+        }
+
+        public void Trigger()
+        {
+            EventTriggered = true;
+        }
+    }
+
+    class StartLocation
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+
+        public StartLocation(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    class PossibleEvents
+    {
+        static void OutOfBorders(int a, int b, int[] c, int[] d, MyEvent evt)
+        {
+            if (a < c[0] || a > c[1] || b < d[0] || b > d[1])
+            {
+                Console.WriteLine("Точка вышла за границы!");
+                evt.Trigger();
+            }
+        }
+
+        static void Main()
+        {
+            StartLocation location = new StartLocation(100, 50);
+            int[] x = { 0, 450 };
+            int[] y = { 0, 200 };
+            Random rndm = new Random();
+            MyEvent evt = new MyEvent();
+            evt.CrossBorder += () => OutOfBorders(location.x, location.y, x, y, evt);
+
+            while (!evt.EventTriggered)
+            {
+                location.x += rndm.Next(-100, 100);
+                location.y += rndm.Next(-100, 100);
+
+                Console.WriteLine($"Координаты: x = {location.x}, y = {location.y}");
+                evt.Crossed();
+            }
+        }
+    }
+}
