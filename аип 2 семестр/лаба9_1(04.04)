@@ -1,0 +1,35 @@
+using System;
+using System.Diagnostics.Metrics;
+public delegate void Counter(int x, int y);
+{
+    class Program
+    {
+        static void Main()
+        {
+            
+            int a = Convert.ToInt32(Console.ReadLine());
+            int b = Convert.ToInt32(Console.ReadLine());
+
+            var sum = (int x, int y) =>  x + y;
+            int _sum = sum(a, b);
+            Console.WriteLine("Сумма чисел: " + _sum);
+
+            var diff = (int x, int y) => x - y;
+            int _diff = diff(a, b);
+            Console.WriteLine("Разность чисел: " + _diff);
+
+            var mult = (int x, int y) => x * y;
+            int _mult = mult(a, b);
+            Console.WriteLine("Произведение чисел: " + _mult);
+
+            var div = (int x, int y) =>
+            {
+                if (y != 0) return x / y;
+                else { Console.WriteLine("Деление на 0 невозможно!"); return 0; }
+            };
+            int _div = div(a, b);
+            Console.WriteLine("Разность чисел: " + _div);
+
+        }
+    }
+}
