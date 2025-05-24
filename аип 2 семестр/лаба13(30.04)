@@ -1,0 +1,146 @@
+using System;
+using System.Linq;
+using System.Net.NetworkInformation;
+{
+    class Phones
+    {
+        public int num { get; set; }
+        public int year { get; set; }
+        public string oper { get; set; }
+        public string full_name { get; set; }
+        public Phones(int num, int year, string oper, string full_name)
+        {
+            this.num = num;
+            this.year = year;
+            this.oper = oper;
+            this.full_name = full_name;
+        }
+    }
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Введите количество пользователей: ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Phones[] phones = new Phones[n];
+            while (true)
+            {
+                Console.WriteLine("1. Добавить пользователей");
+                Console.WriteLine("2. Информация о пользователях");
+                Console.WriteLine("3. Выход");
+
+                int v = Convert.ToInt32(Console.ReadLine());
+                int numCounter = 0;
+
+
+                if (v == 1)
+                {
+                    for (int i = 0; i < n; i++)
+                    {
+                        Console.WriteLine("Введите номер телефона:");
+                        int number = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Введите ФИО:");
+                        string name = Console.ReadLine();
+
+                        Console.WriteLine("Введите год подключения:");
+                        int year = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Введите оператора связи:");
+                        string operatorName = Console.ReadLine();
+
+                        phones[i] = new Phones(number, year, operatorName, name);
+                    }
+                }
+                else if (v == 2)
+                {
+                    Console.WriteLine("1. Группировка по году постановки");
+                    Console.WriteLine("2. Группировка по оператору связи");
+                    Console.WriteLine("3. Поиск по номеру телефона");
+                    Console.WriteLine("4. Поиск по ФИО владельца");
+
+                    int w = Convert.ToInt32(Console.ReadLine());
+
+                    if (w == 1)
+                    {
+                        var date = from phone in phones
+                                   group phone by phone.year;
+
+                        foreach (var Year in date)
+                        {
+                            Console.WriteLine(Year.Key);
+
+                            foreach (var phone in Year)
+                            {
+                                Console.Write(phone.full_name + " ");
+                            }
+                            foreach (var phone in Year)
+                            {
+                                Console.Write(phone.num + " ");
+                            }
+                            foreach (var phone in Year)
+                            {
+                                Console.Write(phone.oper + " ");
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                    if (w == 2)
+                    {
+                        var tele = from phone in phones
+                                      group phone by phone.oper;
+
+                        foreach (var op in tele)
+                        {
+                            Console.WriteLine(op.Key);
+
+                            foreach (var phone in op)
+                            {
+                                Console.Write(phone.full_name + " ");
+                            }
+                            foreach (var phone in op)
+                            {
+                                Console.Write(phone.num + " ");
+                            }
+                            foreach (var phone in op)
+                            {
+                                Console.Write(phone.year + " ");
+                            }
+                            Console.WriteLine();
+                        }
+
+                    }
+
+                    if (w == 3)
+                    {
+                        Console.WriteLine("Введите номер телефона");
+                        int m = Convert.ToInt32(Console.ReadLine());
+
+                        var numb = from phone in phones
+                                    where phone.num == m
+                                    select phone;
+                        foreach (var phone in numb)
+                        {
+                            Console.WriteLine(phone.full_name + " " + phone.year + " " + phone.oper);
+                        }
+
+                    }
+                    if (w == 4)
+                    {
+                        Console.WriteLine("Введите ФИО пользователя: ");
+                        string user_name = Console.ReadLine();
+
+                        var numb = from phone in phones
+                                    where phone.full_name == user_name
+                                    select phone;
+                        foreach (var phone in numb)
+                        {
+                            Console.WriteLine(phone.num + " " + phone.year + " " + phone.oper);
+                        }
+                    }
+                }
+                else if (v == 3) break;
+            }
+        }
+    }
+}
