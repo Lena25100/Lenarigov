@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+
+class WaveAlgorithm
+{
+    static int MinSteps(char[,] gameField, int startX, int startY, int endX, int endY)
+    {
+        int rows = gameField.GetLength(0);
+        int cols = gameField.GetLength(1);
+        int[,] steps = new int[rows, cols];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                steps[i, j] = int.MaxValue;
+            }
+        }
+
+        steps[startX, startY] = 0;
+
+        Queue<(int, int)> queue = new Queue<(int, int)>();
+        queue.Enqueue((startX, startY));
+
+        int[] dx = { -1, 1, 0, 0 };
+        int[] dy = { 0, 0, -1, 1 };
+
+        while (queue.Count > 0)
+        {
+            (int x, int y) = queue.Dequeue();
+
+            if (x == endX && y == endY)
+            {
+                return steps[x, y];
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                int newX = x + dx[i];
+                int newY = y + dy[i];
+
+                if (newX >= 0 && newX < rows && newY >= 0 && newY < cols &&
+                    gameField[newX, newY] != 'X' && steps[newX, newY] == int.MaxValue)
+                {
+                    steps[newX, newY] = steps[x, y] + 1;
+                    queue.Enqueue((newX, newY));
+                }
+            }
+        }
+
+        return -1; // Если путь не найден
+    }
+
+    static void Main(string[] args)
+    {
+        char[,] gameField = {
+            {'X', 'X', 'X', 'X', 'X', 'X'},
+            {'X', '.', '.', '.', '.', 'X'},
+            {'X', '.', 'X', 'X', '.', 'X'},
+            {'X', '.', '.', '.', '.', 'X'},
+            {'X', '.', 'X', 'X', '.', 'X'},
+            {'X', 'X', 'X', 'X', 'X', 'X'}
+        };
+
+        int startX = 1, startY = 1;
+        int endX = 4, endY = 4;
+
+        int minSteps = MinSteps(gameField, startX, startY, endX, endY);
+
+        if (minSteps != -1)
+        {
+            Console.WriteLine("Минимальное количество шагов: " + minSteps);
+        }
+        else
+        {
+            Console.WriteLine("Путь не найден.");
+        }
+    }
+} 
