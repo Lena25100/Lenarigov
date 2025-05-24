@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+
+struct Book
+{
+    public string Author;
+    public string Title;
+    public int Copyright;
+    public string Publisher;
+    public bool EverLended;
+    public bool OnHands;
+    public string? LendBook;
+    public string? RetutnBook;
+
+    public Book(string a, string t, int c, string p, bool e, bool o)
+    {
+        this.Author = a;
+        this.Title = t;
+        this.Copyright = c;
+        this.Publisher = p;
+        this.EverLended = e;
+        this.OnHands = o;
+        this.LendBook = null;
+        this.RetutnBook = null;
+    }
+
+    public void IsGiven(string l, string r)
+    {
+        if (EverLended)
+        {
+            this.LendBook = l;
+            this.RetutnBook = r;
+        }
+        else
+        {
+            this.LendBook = null;
+            this.RetutnBook = null;
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<Book> AllBooks = new List<Book> {
+            new Book("Джоан Роулинг","Гарри Поттер и Философский камень", 2023, "Махаон", false, false),
+            new Book("Джордж Оруэлл", "1984", 2023, "ACT", true, false),
+            new Book("Эмили Бронте", "Грозовой перевал", 2020, "ACT", true, true)
+        };
+
+        var book1 = AllBooks[1];
+        book1.IsGiven("Была выдана: 08.03.2024", "Была сдана 10.04.2024");
+        AllBooks[1] = book1;
+
+        var book2 = AllBooks[2];
+        book2.IsGiven("Была выдана: 08.03.2025", "Была сдана 24.06.2025");
+        AllBooks[2] = book2;
+
+        List<Book> LendedBooks = new List<Book>();
+        List<Book> NeverLendedBooks = new List<Book>();
+
+        for (int i = 0; i < AllBooks.Count; i++)
+        {
+            if (AllBooks[i].OnHands) LendedBooks.Add(AllBooks[i]);
+            if (!AllBooks[i].EverLended) NeverLendedBooks.Add(AllBooks[i]);
+        }
+
+        Console.WriteLine("Книги, которые сейчас на руках: ");
+        for (int i = 0; i < LendedBooks.Count; i++)
+        {
+            Console.WriteLine($"Книга: {LendedBooks[i].Title}\nАвтор: {LendedBooks[i].Author}\nгод издания: {LendedBooks[i].Copyright}\n" +
+                $"Издательство: {LendedBooks[i].Publisher}");
+            Console.WriteLine($"{LendedBooks[i].LendBook}\n{LendedBooks[i].RetutnBook}\n");
+        }
+
+        Console.WriteLine("Книги, которые никогда не брали: ");
+        for (int i = 0; i < NeverLendedBooks.Count; i++)
+        {
+            Console.WriteLine($"Книга: {NeverLendedBooks[i].Title}\nАвтор: {NeverLendedBooks[i].Author}\nгод издания: {NeverLendedBooks[i].Copyright}\n" +
+                $"Издательство: {NeverLendedBooks[i].Publisher}\n");
+        }
+    }
+}
