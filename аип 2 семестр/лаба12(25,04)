@@ -1,0 +1,59 @@
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        string inputPath = "C:\\Users\\Елена\\OneDrive\\Рабочий стол\\input.txt";
+        string outputPath = "C:\\Users\\Елена\\OneDrive\\Рабочий стол\\output.txt";
+
+        if (!File.Exists(inputPath))
+        {
+            Console.WriteLine("Файл input.txt не найден.");
+            return;
+        }
+
+        string[] lines = File.ReadAllLines(inputPath);
+        using (StreamWriter writer = new StreamWriter(outputPath))
+        {
+            foreach (string line in lines)
+            {
+                string number = "";
+                bool foundEven = false;
+
+                foreach (char ch in line)
+                {
+                    if (char.IsDigit(ch) || (number == "" && ch == '-'))
+                    {
+                        number += ch;
+                    }
+                    else
+                    {
+                        if (number != "" && int.TryParse(number, out int value))
+                        {
+                            if (value % 2 == 0)
+                            {
+                                foundEven = true;
+                                break;
+                            }
+                        }
+                        number = "";
+                    }
+                }
+
+
+                if (!foundEven && number != "" && int.TryParse(number, out int lastValue))
+                {
+                    if (lastValue % 2 == 0)
+                        foundEven = true;
+                }
+
+                if (foundEven)
+                    writer.WriteLine(line);
+            }
+        }
+
+        Console.WriteLine("Готово! Проверьте файл output.txt");
+    }
+}
