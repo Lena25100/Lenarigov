@@ -1,0 +1,258 @@
+using System;
+using System.Linq;
+using System.Runtime.ExceptionServices;
+{
+    class Tools
+    {
+        public int order_id { get; set; }
+        public string name { get; set; }
+
+        public Tools(int order_num, string name)
+        {
+            this.order_id = order_num;
+            this.name = name;
+        }
+    }
+    class Providers
+    {
+        public int p_id { get; set; }
+        public string p_name { get; set; }
+        public long phone { get; set; }
+
+        public Providers(int p_num, string p_name, long phone)
+        {
+            this.p_id = p_num;
+            this.p_name = p_name;
+            this.phone = phone;
+        }
+    }
+    class Pr_inf
+    {
+        public int p_id { get; set; }
+        public int t_id { get; set; }
+        public int price { get; set; }
+        public string[] date { get; set; }
+        public int[] amount { get; set; }
+        
+
+        public Pr_inf(int p_id, int t_id, int price, int size)
+        {
+            this.p_id = p_id;
+            this.t_id = t_id;
+            this.price = price;
+            date = new string[size];
+            amount = new int[size];
+            
+        }
+    }
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Введите количество товаров: ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Tools[] tool = new Tools[n];
+            Pr_inf[] inf = new Pr_inf[n];
+
+            Console.WriteLine("Введите количество поставщиков: ");
+            int m = Convert.ToInt32(Console.ReadLine());
+            Providers[] provider = new Providers[m];
+
+            while (true)
+            {
+                Console.WriteLine("1. Заполнить таблицы");
+                Console.WriteLine("2. Информация о товарах ");
+                Console.WriteLine("3. Выход");
+
+                int choice = Convert.ToInt32(Console.ReadLine());
+
+                if (choice == 1)
+                {
+
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        Console.WriteLine("Введите номер товара:");
+                        int id = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Введите наименование товара:");
+                        string tname = Console.ReadLine();
+
+                        tool[i] = new Tools(id, tname);
+
+                    }
+                    for (int i = 0; i < m; i++)
+                    {
+                        Console.WriteLine("Введите номер поставщика: ");
+                        int p_id = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Введите наименование поставщика: ");
+                        string p_name = Console.ReadLine();
+
+                        Console.WriteLine("Введите номер телефона поставщика: ");
+                        long p_num = Convert.ToInt32(Console.ReadLine());
+
+                        provider[i] = new Providers(p_id, p_name, p_num);
+
+                    }
+                    for (int i = 0; i < n; i++)
+                    {
+                        Console.WriteLine(".Введите номер поставщика: ");
+                        int p_id = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine(".Введите номер товара:");
+                        int t_id = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine(".Введите на какую сумму поставили товар: ");
+                        int amount = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine(".Введите сколько раз поставляли товар: ");
+                        int a = Convert.ToInt32(Console.ReadLine());
+
+                        inf[i] = new Pr_inf(p_id,t_id, amount, a);
+
+                        for (int j = 0; j < a; j++)
+                        {
+                            Console.WriteLine("Введите дату поставки: ");
+                            string d = Console.ReadLine();
+                            inf[i].date[j] = d; 
+
+                            Console.WriteLine("Введите количество товара");
+                            int am = Convert.ToInt32(Console.ReadLine());
+                            inf[i].amount[j] = am;
+                        }
+                    }
+                }
+                else if (choice == 2)
+                {
+                    Console.WriteLine("1. Поставщик, который поставил товар на большую сумму");
+                    Console.WriteLine("2. Поставки, сгруппированные по датам");
+                    Console.WriteLine("3. Товары, сгруппированные по поставщику");
+                    Console.WriteLine("4. Товар, который поставляется чаще всего");
+                    Console.WriteLine("5. Суммы поставок, сгруппированные по поставщику");
+
+                    int choice_2 = Convert.ToInt32(Console.ReadLine());
+
+                    if (choice_2 == 1)
+                    {
+                        int cost = 0;
+                        foreach (var x in inf)
+                        {
+                            for (int j = 0; j < n; j++)
+                            {
+                                cost = Math.Max(cost, x.price);
+                            }
+                        }
+                        foreach (var x in inf)
+                        {
+                            if (cost == x.price)
+                            {
+                                int max_cost = x.p_id;
+                                foreach (var y in provider)
+                                {
+                                    if (max_cost == y.p_id) Console.WriteLine(y.p_name);
+                                }
+                            }
+                        }
+                    }
+                    if (choice_2 == 2)
+                    {
+                        var date_group = from x in inf
+                                         join tname in tool on x.t_id equals tname.order_id
+                                         from idx in Enumerable.Range(0, x.date.Length)
+                                         let d = x.date[idx]
+                                         let amt = x.amount
+                                         group new { d, amt, ToolName = tname.name } by d into grouped
+                                         select grouped;
+                        foreach(var dgroup in date_group)
+                        {
+                            Console.WriteLine($"Дата: {dgroup.Key}");
+                            foreach(var nm in dgroup)
+                            {
+                                Console.WriteLine($"Товар: {nm.ToolName}");
+                            }
+                        }
+                                         
+                    }
+                    if (choice_2 == 3)
+                    {
+                        var amnt = from am in inf
+                                   join pr in provider on am.p_id equals pr.p_id
+                                   join tname in tool on am.t_id equals tname.order_id
+                                   let totalAmount = am.amount.Sum()
+                                   group new { tname, totalAmount } by pr.p_name into grouped
+                                   orderby grouped.Sum(x => x.totalAmount) descending
+                                   select new
+                                   {
+                                       p_name = grouped.Key,
+                                       items = grouped
+                                   };
+
+                        foreach (var v in amnt)
+                        {
+                            Console.WriteLine("Поставщик: " + v.p_name);
+                            foreach (var u in v.items)
+                            {
+                                Console.WriteLine($"Товар: {u.tname.name}");
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                    if (choice_2 == 4)
+                    {
+                        int rare = 0;
+                        foreach (var x in inf)
+                        {
+                            for (int j = 0; j < n; j++)
+                            {
+                                rare = Math.Max(rare, x.date.Length);
+                            }
+                        }
+                        foreach (var x in inf)
+                        {
+                            if (rare == x.date.Length)
+                            {
+                                int often = x.t_id;
+                                foreach (var y in tool)
+                                {
+                                    if (often == y.order_id) Console.WriteLine(y.name);
+                                }
+                            }
+                        }
+                    }
+                    if (choice_2 == 5)
+                    {
+                        var sum = from prov in inf
+                                  join pr in provider on prov.p_id equals pr.p_id
+                                  orderby prov.price
+                                  group new { prov, pr } by pr.p_name into grouped 
+                                  select new
+                                  {
+                                      p_name = grouped.Key,
+                                      items = grouped
+                                  };
+                        foreach (var s in sum)
+                        {
+                            Console.WriteLine($"Поставщик: {s.p_name}");
+                            foreach (var y in s.items)
+                            {
+                                Console.WriteLine($"Сумма поставок: {y.prov.price}");
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                }
+                else if (choice == 3) break;
+            }
+        }
+        static int Sum(int[] sum)
+        {
+            int summa = 0;
+            foreach (int i in sum)
+            {
+                summa += i;
+            }
+            return summa;
+        }
+    }
+}
