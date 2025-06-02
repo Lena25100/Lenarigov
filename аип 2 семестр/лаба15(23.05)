@@ -1,0 +1,33 @@
+using System;
+{
+    class Program
+    {
+        unsafe static void Main()
+        {
+            int* ptrs = stackalloc int[5];
+            ptrs[0] = 1;
+            ptrs[1] = 11;
+            ptrs[2] = 22;
+            ptrs[3] = 10;
+            ptrs[4] = 17;
+
+            int* p = ptrs;
+            for (var i = 0; i < 5; i++)
+            {
+                if (palindrome(p[i].ToString()))
+                {
+                    Console.WriteLine(p[i]);
+                }
+            }
+        }
+    
+    static bool palindrome(string x)
+    {
+        for (var i = 0; i < x.Length / 2; i++)
+        {
+            if (x[i] != x[x.Length - 1 - i]) return false;
+        }
+        return true;
+        }
+    }
+}
