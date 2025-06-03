@@ -1,0 +1,213 @@
+using System;
+using System.Linq;
+using System.Runtime.ExceptionServices;
+    class Laptop
+{
+    public int m_id { get; set; }
+    public string model_name { get; set; }
+
+    public Laptop(int order_num, string name)
+    {
+        m_id = order_num;
+        model_name = name;
+    }
+}
+class OP
+{
+    public int op_id { get; set; }
+    public string op_name { get; set; }
+
+    public OP(int op_id, string op_name)
+    {
+        this.op_id = op_id;
+        this.op_name = op_name;
+    }
+}
+class Students
+{
+    public int s_id { get; set; }
+    public string n_class { get; set; }
+    public string full_name { get; set; }
+    public int op_id { get; set; }
+    public int m_id { get; set; }
+    public bool own { get; set; }
+
+
+
+
+    public Students(int s_id, string nclass, string name, bool own, int m_id, int op_id)
+    {
+        this.s_id = s_id;
+        this.n_class = nclass;
+        full_name = name;
+        this.own = own;
+        this.m_id = m_id;
+        this.op_id = op_id;
+    }
+}
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Введите количество операционных систем: ");
+        int n = Convert.ToInt32(Console.ReadLine());
+        OP[] ops = new OP[n];
+        Console.WriteLine("Введите количество марок ноутбуков: ");
+        int l = Convert.ToInt32(Console.ReadLine());
+        Laptop[] laptop = new Laptop[l];
+        Console.WriteLine("Введите количество учеников: ");
+        int m = Convert.ToInt32(Console.ReadLine());
+        Students[] student = new Students[m];
+
+        while (true)
+        {
+            Console.WriteLine("1. Заполнить таблицы");
+            Console.WriteLine("2. Информация об учениках ");
+            Console.WriteLine("3. Выход");
+
+            int choice = Convert.ToInt32(Console.ReadLine());
+
+            if (choice == 1)
+            {
+
+
+                for (int i = 0; i < n; i++)
+                {
+                    Console.WriteLine("Введите id операционной системы:");
+                    int id = Convert.ToInt32(Console.ReadLine());
+
+                    Console.WriteLine("Введите наименование операционной системы:");
+                    string oname = Console.ReadLine();
+
+                    ops[i] = new OP(id, oname);
+                }
+                for (int i = 0; i < l; i++)
+                {
+                    Console.WriteLine("Введите id марки: ");
+                    int m_id = Convert.ToInt32(Console.ReadLine());
+
+                    Console.WriteLine("Введите наименование марки ноутбука: ");
+                    string m_name = Console.ReadLine();
+
+                    laptop[i] = new Laptop(m_id, m_name);
+                }
+                for (int i = 0; i < m; i++)
+                {
+                    Console.WriteLine(".Введите порядковый номер: ");
+                    int s_id = Convert.ToInt32(Console.ReadLine());
+
+                    Console.WriteLine(".Введите класс ученика: ");
+                    string cl = Console.ReadLine();
+
+                    Console.WriteLine(".Введите ФИО ученика: ");
+                    string s_name = Console.ReadLine();
+
+                    Console.WriteLine(".Есть ли у него компьютер? (да/нет): ");
+                    int m_id = 0;
+                    int l_id = 0;
+                    bool owner = false;
+                    string own = Console.ReadLine();
+
+                    if (own == "да")
+                    {
+                        owner = true;
+                        Console.WriteLine("Введите id операционной системы:");
+                        l_id = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("Введите id марки: ");
+                        m_id = Convert.ToInt32(Console.ReadLine());
+                    }
+
+                    student[i] = new Students(s_id, cl, s_name, owner, m_id, l_id);
+                }
+            }
+            else if (choice == 2)
+            {
+                Console.WriteLine("1. Список учеников, которые не имеют ноутбук");
+                Console.WriteLine("2. Список учеников, сгруппированных по классу + сортировка по марке ноутбука");
+                Console.WriteLine("3. Выборка учеников по марке ноутбука");
+                Console.WriteLine("4. Группировка по типу ОП");
+
+                int choice_2 = Convert.ToInt32(Console.ReadLine());
+
+                if (choice_2 == 1)
+                {
+                    var has_laptop = from people in student
+                                     where people.own == false
+                                     select people;
+                    foreach (var i in has_laptop)
+                    {
+                        Console.WriteLine(i.full_name);
+                    }
+                }
+                if (choice_2 == 2)
+                {
+                    var class_group = from s in student
+                                      join a in laptop on s.m_id equals a.m_id
+                                      orderby a.model_name
+                                      group new { s, a } by s.n_class into grouped
+                                      select new
+                                      {
+                                          people = grouped,
+                                          class_name = grouped.Key
+                                      };
+
+                    foreach (var d in class_group)
+                    {
+                        Console.WriteLine($"Класс: {d.class_name}");
+                        foreach (var nm in d.people)
+                        {
+                            Console.WriteLine($"ФИО: {nm.s.full_name}");
+                            Console.WriteLine($"Модель: {nm.a.model_name}");
+                        }
+                    }
+
+                }
+                if (choice_2 == 3)
+                {
+                    Console.WriteLine("Введите марку ноутбука для поиска:");
+                    string const_model = Console.ReadLine();
+
+                    var model_choose = from s in student
+                                       join i in laptop on s.m_id equals i.m_id
+                                       where s.own == true && i.model_name == const_model
+                                       select new { Student = s, Laptop = i };
+
+                    if (model_choose.Any())
+                    {
+                        Console.WriteLine($"Ученики с ноутбуком марки '{const_model}':");
+                        foreach (var item in model_choose)
+                        {
+                            Console.WriteLine($"ФИО: {item.Student.full_name}, Класс: {item.Student.n_class}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Нет учеников с ноутбуком марки '{const_model}'");
+                    }
+                }
+                if (choice_2 == 4)
+                {
+                    var op_choose = from s in student
+                                    join a in ops on s.op_id equals a.op_id
+                                    group new { s, a } by a.op_name into grouped
+                                    select new
+                                    {
+                                        people = grouped,
+                                        opp_name = grouped.Key
+                                    };
+
+                    foreach (var q in op_choose)
+                    {
+                        Console.WriteLine($"ОП: {q.opp_name}");
+                        foreach (var fio in q.people)
+                        {
+                            Console.WriteLine($"ФИО: {fio.s.full_name}");
+                        }
+
+                    }
+                }
+            }
+            else if (choice == 3) break;
+        }
+    }
+}
