@@ -1,0 +1,89 @@
+using System;
+
+class KruskalAlgorithm
+{
+    struct Edge
+    {
+        public int src, dest, weight;
+    }
+
+    static int Find(int[] parent, int i)
+    {
+        while (parent[i] != i)
+            i = parent[i];
+        return i;
+    }
+
+    static void Kruskal(int[,] graph, int V)
+    {
+        int edgeCount = 0;
+        for (int i = 0; i < V; i++)
+            for (int j = i + 1; j < V; j++)
+                if (graph[i, j] != 0)
+                    edgeCount++;
+
+        Edge[] edges = new Edge[edgeCount];
+        int e = 0;
+        for (int i = 0; i < V; i++)
+            for (int j = i + 1; j < V; j++)
+                if (graph[i, j] != 0)
+                    edges[e++] = new Edge { src = i, dest = j, weight = graph[i, j] };
+
+        for (int i = 0; i < edgeCount - 1; i++)
+            for (int j = 0; j < edgeCount - i - 1; j++)
+                if (edges[j].weight > edges[j + 1].weight)
+                {
+                    Edge temp = edges[j];
+                    edges[j] = edges[j + 1];
+                    edges[j + 1] = temp;
+                }
+
+        int[] parent = new int[V];
+        for (int i = 0; i < V; i++)
+            parent[i] = i;
+
+        Console.WriteLine("Ребра минимального остовного дерева:");
+        int totalWeight = 0;
+        int selectedEdges = 0;
+
+        for (e = 0; e < edgeCount && selectedEdges < V - 1; e++)
+        {
+            int x = Find(parent, edges[e].src);
+            int y = Find(parent, edges[e].dest);
+
+            if (x != y)
+            {
+                Console.WriteLine($"{edges[e].src} -- {edges[e].dest} (вес: {edges[e].weight})");
+                totalWeight += edges[e].weight;
+                parent[y] = x;
+                selectedEdges++;
+            }
+        }
+
+        Console.WriteLine($"Общий вес минимального остовного дерева: {totalWeight}");
+    }
+
+    static void Main()
+    {
+        int[,] graph = new int[,] {
+            {0, 2, 0, 6, 0},
+            {2, 0, 3, 8, 5},
+            {0, 3, 0, 0, 7},
+            {6, 8, 0, 0, 9},
+            {0, 5, 7, 9, 0}
+        };
+
+        int V = graph.GetLength(0); 
+
+        Console.WriteLine("Исходный граф (матрица смежности):");
+        for (int i = 0; i < V; i++)
+        {
+            for (int j = 0; j < V; j++)
+                Console.Write(graph[i, j] + " ");
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+
+        Kruskal(graph, V);
+    }
+}
