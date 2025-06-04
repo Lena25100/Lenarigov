@@ -1,0 +1,81 @@
+using System;
+using System.Runtime.InteropServices;
+
+namespace BinaryTreeProduct
+{
+    unsafe struct ProductNode
+    {
+        public int id;
+        public string name;
+        public ProductNode* left;
+        public ProductNode* right;
+
+        public ProductNode(int id, string name, ProductNode* left = null, ProductNode* right = null)
+        {
+            this.id = id;
+            this.name = name;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    unsafe class Program
+    {
+        static void Main()
+        {
+            ProductNode node1 = new ProductNode(25, "Кофе");
+            ProductNode* head = &node1;
+
+            ProductNode node2 = new ProductNode(27, "Молоко");
+            ProductNode node3 = new ProductNode(15, "Сок");
+            ProductNode node4 = new ProductNode(13, "Чай");
+            ProductNode node5 = new ProductNode(1, "Вода");
+            ProductNode node6 = new ProductNode(3, "Лимонад");
+
+            InsertProduct(head, &node2);
+            InsertProduct(head, &node3);
+            InsertProduct(head, &node4);
+            InsertProduct(head, &node5);
+            InsertProduct(head, &node6);
+
+            Console.WriteLine("Левая ветка (меньшие ID):");
+            PrintInOrder(head->left);
+
+            Console.WriteLine("\nКорень:");
+            Console.WriteLine($"ID: {head->id}, Продукт: {head->name}");
+
+            Console.WriteLine("\nПравая ветка (большие ID):");
+            PrintInOrder(head->right);
+        }
+
+        public static void InsertProduct(ProductNode* root, ProductNode* newNode)
+        {
+            if (root == null || newNode == null) return;
+
+            if (newNode->id < root->id)
+            {
+                if (root->left == null)
+                    root->left = newNode;
+                else
+                    InsertProduct(root->left, newNode);
+            }
+            else if (newNode->id > root->id)
+            {
+                if (root->right == null)
+                    root->right = newNode;
+                else
+                    InsertProduct(root->right, newNode);
+            }
+        }
+
+        public static void PrintInOrder(ProductNode* node)
+        {
+            if (node != null)
+            {
+                PrintInOrder(node->left);
+                Console.WriteLine($"ID: {node->id}, Продукт: {node->name}");
+                PrintInOrder(node->right);
+            }
+        }
+    }
+}
